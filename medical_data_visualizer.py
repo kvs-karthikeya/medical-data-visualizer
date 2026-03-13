@@ -3,31 +3,31 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
-# 1. Import data
+# Import data
 df = pd.read_csv('medical_examination.csv')
 
-# 2. Add overweight column
+# Add overweight column
 df['overweight'] = (df['weight'] / (df['height'] / 100) ** 2 > 25).astype(int)
 
-# 3. Normalize cholesterol and gluc (0 = good, 1 = bad)
+# Normalize cholesterol and gluc (0 = good, 1 = bad)
 df['cholesterol'] = (df['cholesterol'] > 1).astype(int)
 df['gluc'] = (df['gluc'] > 1).astype(int)
 
 
-# 4. Draw Categorical Plot
+# Draw Categorical Plot
 def draw_cat_plot():
-    # 5. Create DataFrame for cat plot using pd.melt
+    # Create DataFrame for cat plot using pd.melt
     df_cat = pd.melt(
         df,
         id_vars=['cardio'],
         value_vars=['cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight']
     )
 
-    # 6. Group and reformat data, rename 'value' column to 'total' for counts
+    # Group and reformat data, rename 'value' column to 'total' for counts
     df_cat = df_cat.groupby(['cardio', 'variable', 'value'], as_index=False).size()
     df_cat.rename(columns={'size': 'total'}, inplace=True)
 
-    # 7. Draw the catplot
+    # Draw the catplot
     cat_plot = sns.catplot(
         data=df_cat,
         x='variable',
@@ -38,12 +38,12 @@ def draw_cat_plot():
     )
     fig = cat_plot.fig
 
-    # 9. Save and return figure
+    # Save and return figure
     fig.savefig('catplot.png')
     return fig
 
 
-# 10. Draw Heat Map
+# Draw Heat Map
 def draw_heat_map():
     # 11. Clean the data
     df_heat = df[
@@ -54,16 +54,16 @@ def draw_heat_map():
         (df['weight'] <= df['weight'].quantile(0.975))
     ]
 
-    # 12. Calculate the correlation matrix
+    # Calculate the correlation matrix
     corr = df_heat.corr(numeric_only=True)
 
-    # 13. Generate a mask for the upper triangle
+    # Generate a mask for the upper triangle
     mask = np.triu(np.ones_like(corr, dtype=bool))
 
-    # 14. Set up the matplotlib figure
+    # Set up the matplotlib figure
     fig, ax = plt.subplots(figsize=(12, 10))
 
-    # 15. Plot the heatmap
+    # Plot the heatmap
     sns.heatmap(
         corr,
         mask=mask,
@@ -76,6 +76,6 @@ def draw_heat_map():
         cbar_kws={'shrink': 0.5}
     )
 
-    # 17. Save and return figure
+    # Save and return figure
     fig.savefig('heatmap.png')
     return fig
